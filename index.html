@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Cartoon Character</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 50%, #4338ca 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* Character Container */
+        .character-container {
+            position: relative;
+            width: 180px;
+            height: 220px;
+            z-index: 100;
+            transition: all 0.2s ease-out;
+            animation: bounce 2s infinite alternate;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        /* Character Parts */
+        .character {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        .face {
+            position: absolute;
+            width: 120px;
+            height: 140px;
+            background: #FFD5C2;
+            border-radius: 50%;
+            top: -10px;
+            left: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 2;
+            animation: wobble 5s infinite ease-in-out;
+            transform-style: preserve-3d;
+            transform: rotateY(10deg);
+        }
+
+        .eyes {
+            position: absolute;
+            top: 30px;
+            left: 20px;
+            display: flex;
+            justify-content: space-between;
+            width: 60px;
+        }
+
+        .eye {
+            width: 20px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            position: relative;
+            border: 2px solid #333;
+            transform-style: preserve-3d;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .pupil {
+            width: 10px;
+            height: 10px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            left: 5px;
+            transition: transform 0.1s ease-out;
+        }
+
+        .mouth {
+            position: absolute;
+            width: 40px;
+            height: 20px;
+            background: #E75480;
+            border-radius: 0 0 20px 20px;
+            top: 80px;
+            left: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .body {
+            position: absolute;
+            width: 80px;
+            height: 100px;
+            background: #4A90E2;
+            border-radius: 20px;
+            top: 120px;
+            left: 35px;
+            z-index: 1;
+        }
+
+        .arm-left, .arm-right {
+            position: absolute;
+            width: 20px;
+            height: 80px;
+            background: #FFD5C2;
+            border-radius: 10px;
+            z-index: 0;
+        }
+
+        .arm-left {
+            top: 120px;
+            left: 15px;
+        }
+
+        .arm-right {
+            top: 120px;
+            right: 15px;
+        }
+
+        /* Hair */
+        .hair {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            background: #8B4513;
+            border-radius: 60% 60% 0 0;
+            top: -20px;
+            left: 15px;
+            z-index: 1;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Speech Bubble */
+        .speech-bubble {
+            position: absolute;
+            top: -50px;
+            left: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 150px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+            z-index: 1000;
+        }
+
+        /* Page Content */
+        .content {
+            position: relative;
+            z-index: 10;
+            color: white;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 3rem;
+            background: linear-gradient(45deg, #ffffff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: none;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Animation Classes */
+        @keyframes wobble {
+            0%, 100% { transform: rotateY(-10deg) rotateZ(-2deg); }
+            50% { transform: rotateY(10deg) rotateZ(2deg); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes wave {
+            0% { transform: rotate(0deg) translateY(0); }
+            25% { transform: rotate(30deg) translateY(-10px); }
+            75% { transform: rotate(-30deg) translateY(-10px); }
+            100% { transform: rotate(0deg) translateY(0); }
+        }
+
+        @keyframes talk {
+            0% { 
+                height: 20px; 
+                transform: rotateX(0deg) translateZ(10px);
+            }
+            50% { 
+                height: 30px;
+                transform: rotateX(20deg) translateZ(20px);
+            }
+            100% { 
+                height: 20px;
+                transform: rotateX(0deg) translateZ(10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="character-container" id="character">
+        <div class="character">
+            <div class="hair"></div>
+            <div class="face">
+                <div class="eyes">
+                    <div class="eye"><div class="pupil" id="leftPupil"></div></div>
+                    <div class="eye"><div class="pupil" id="rightPupil"></div></div>
+                </div>
+                <div class="mouth" id="mouth"></div>
+            </div>
+            <div class="body"></div>
+            <div class="arm-left"></div>
+            <div class="arm-right"></div>
+            <div class="speech-bubble" id="speechBubble">Hello! I'm your interactive guide!</div>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>Welcome to My Interactive Character </h1>
+        <p>Click the buttons below to interact with the character!</p>
+        
+        <div class="buttons">
+            <button class="btn" id="waveBtn">Wave</button>
+            <button class="btn" id="talkBtn">Talk</button>
+        </div>
+    </div>
+
+    <script>
+        class InteractiveCharacter {
+            constructor() {
+                this.initElements();
+                this.setupEventListeners();
+            }
+
+            initElements() {
+                this.character = document.getElementById('character');
+                this.leftPupil = document.getElementById('leftPupil');
+                this.rightPupil = document.getElementById('rightPupil');
+                this.mouth = document.getElementById('mouth');
+                this.speechBubble = document.getElementById('speechBubble');
+                this.waveBtn = document.getElementById('waveBtn');
+                this.talkBtn = document.getElementById('talkBtn');
+            }
+
+            setupEventListeners() {
+                this.waveBtn.addEventListener('click', () => {
+                    this.wave();
+                    this.speechBubble.textContent = "Hello there! 👋";
+                    this.showSpeechBubble();
+                    setTimeout(() => this.hideSpeechBubble(), 2000);
+                });
+
+                this.talkBtn.addEventListener('click', () => {
+                    this.talk();
+                    this.speechBubble.textContent = this.getRandomTalkMessage();
+                    this.showSpeechBubble();
+                    setTimeout(() => this.hideSpeechBubble(), 2000);
+                });
+            }
+
+            wave() {
+                this.character.style.animation = 'wave 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+                this.speechBubble.textContent = ["👋 Namaste!", "Hi there! 👋", "Hello friend!"][Math.floor(Math.random() * 3)];
+                this.showSpeechBubble();
+                setTimeout(() => {
+                    this.character.style.animation = 'bounce 2s infinite alternate';
+                    this.hideSpeechBubble();
+                }, 2000);
+            }
+
+            talk() {
+                this.mouth.style.animation = 'talk 0.5s ease-in-out infinite';
+            }
+
+            showSpeechBubble() {
+                this.speechBubble.style.opacity = '1';
+            }
+
+            hideSpeechBubble() {
+                this.speechBubble.style.opacity = '0';
+            }
+
+            getRandomTalkMessage() {
+                const messages = [
+                    "Wanna hear a joke? Why don't hackers go hungry? Because of all the cookies! 🍪",
+                    "My code is like humor - dry! 😆", 
+                    "I was going to tell a time travel joke...but you didn't like it! 🕰️",
+                    "Why don't programmers like nature? It has too many bugs! 🐛",
+                    "My code never works...until it does! 🎉",
+                    "Debugging is like being a detective in a crime movie where you're also the murderer 🔍"
+                ];
+                return messages[Math.floor(Math.random() * messages.length)];
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new InteractiveCharacter();
+        });
+    </script>
+</body>
+</html>
